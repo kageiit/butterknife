@@ -120,7 +120,12 @@ public final class ButterKnifeProcessor extends AbstractProcessor {
     elementUtils = env.getElementUtils();
     typeUtils = env.getTypeUtils();
     filer = env.getFiler();
-    trees = Trees.instance(processingEnv);
+
+    try {
+      trees = Trees.instance(processingEnv);
+    } catch (Exception e) {
+      trees = null;
+    }
   }
 
   @Override public Set<String> getSupportedAnnotationTypes() {
@@ -173,7 +178,9 @@ public final class ButterKnifeProcessor extends AbstractProcessor {
     Map<TypeElement, BindingClass> targetClassMap = new LinkedHashMap<>();
     Set<TypeElement> erasedTargetNames = new LinkedHashSet<>();
 
-    scanForRClasses(env);
+    if (trees != null) {
+      scanForRClasses(env);
+    }
 
     // Process each @BindArray element.
     for (Element element : env.getElementsAnnotatedWith(BindArray.class)) {
